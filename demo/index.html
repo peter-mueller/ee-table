@@ -15,7 +15,7 @@
   <script type="module">
     import { html, render } from 'lit-html';
     import '../dist/mwc-table.js';
-    import { DataTable, Header } from '../dist/index.js';
+    import { DataTable } from '../dist/index.js';
 
     class Person {
         name = "";
@@ -27,15 +27,30 @@
         }
     }
 
-    const dt = new DataTable();
+    const table = new DataTable();
 
     const checkbox = html`<input type="checkbox" style="height: 16px; width: 16px">`
-    dt.addHeader(new Header(checkbox, () => checkbox));
-    dt.addHeader(new Header("Name", p => html`<a href="./">${p.name}</a>`));
-    dt.addHeader(new Header("Surname", p => p.surname));
-    dt.addHeader(new Header("Full Name", p => [p.surname, p.name].filter(value => !!value).join(", ")));
+    table.addHeader(h => h
+      .customHeader(checkbox)
+      .cell(() => checkbox)
+    );
 
-    dt.items = [
+    table.addHeader(h => h
+      .name("Name")
+      .cell(p => html`<a href="./">${p.name}</a>`)
+    );
+
+    table.addHeader(h => h
+      .name("Surname")
+      .cell(p => p.surname)
+    );
+
+    table.addHeader(h => h
+      .name("Full Name")
+      .cell(p => [p.surname, p.name].filter(value => !!value).join(", "))
+    );
+
+    table.items = [
         Person.of({name: "Hans", surname: "Test"}),
         Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
         Person.of({name: "Anna"}),
@@ -43,7 +58,7 @@
 
     render(
       html`
-        <mwc-table fixed dense .table=${dt}></mwc-table>
+        <mwc-table fixed dense .table=${table}></mwc-table>
       `,
       document.querySelector('#demo')
     );

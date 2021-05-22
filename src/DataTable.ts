@@ -9,9 +9,9 @@ import { TemplateResult } from 'lit-html';
  */
 export class Header<RowType> {
   /**
-   * Name of the header or a TemplateResult for custom HTML.
+   * Header is the name or a TemplateResult for custom HTML.
    */
-  name: string | TemplateResult = '';
+  header: string | TemplateResult = '';
 
   /**
    * Valueer maps the RowType to the value to show in the table cell for
@@ -19,10 +19,24 @@ export class Header<RowType> {
    * @returns string to show or custom HTML to show in the cell
    */
   valueer: (row: RowType) => string | TemplateResult = () => '';
+}
 
-  constructor(name: string, valueer: (row: RowType) => string) {
-    this.name = name;
-    this.valueer = valueer;
+export class HeaderBuilder<RowType> {
+  header: Header<RowType> = new Header();
+
+  name(name: string): HeaderBuilder<RowType> {
+    this.header.header = name;
+    return this;
+  }
+
+  customHeader(customHTML: TemplateResult): HeaderBuilder<RowType> {
+    this.header.header = customHTML;
+    return this;
+  }
+
+  cell(valueer: (row: RowType) => string | TemplateResult): Header<RowType> {
+    this.header.valueer = valueer;
+    return this.header;
   }
 }
 
@@ -43,8 +57,9 @@ export class DataTable<RowType> {
    */
   items: RowType[] = [];
 
-  addHeader(header: Header<RowType>) {
-    this.headers.push(header);
+  /** todo: find better builder api the direct push of header feels weird */
+  addHeader(builder: (b: HeaderBuilder<RowType>) => Header<RowType>) {
+    this.headers.push(builder(new HeaderBuilder<RowType>()));
   }
 
   /**
@@ -55,7 +70,7 @@ export class DataTable<RowType> {
    */
   printToConsole() {
     // eslint-disable-next-line no-console
-    console.log(this.headers.map(h => h.name).join(' | '));
+    console.log(this.headers.map(h => h.header).join(' | '));
     // eslint-disable-next-line no-console
     console.log(this.headers.map(() => '-'.repeat(3)).join(' | '));
     this.items.forEach(item => {

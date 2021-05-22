@@ -38,7 +38,7 @@ export class EeTable extends LitElement {
     return html`
       <thead>
         <tr>
-          ${this.table.headers.map(h => html`<th>${h.name}</th>`)}
+          ${this.table.headers.map(h => html`<th>${h.header}</th>`)}
         </tr>
       </thead>
     `;
