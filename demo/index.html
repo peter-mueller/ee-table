@@ -33,7 +33,7 @@
     dt.addHeader(new Header(checkbox, () => checkbox));
     dt.addHeader(new Header("Name", p => html`<a href="./">${p.name}</a>`));
     dt.addHeader(new Header("Surname", p => p.surname));
-    dt.addHeader(new Header("Voller Name", p => [p.surname, p.name].filter(value => !!value).join(", ")));
+    dt.addHeader(new Header("Full Name", p => [p.surname, p.name].filter(value => !!value).join(", ")));
 
     dt.items = [
         Person.of({name: "Hans", surname: "Test"}),
