@@ -35,8 +35,8 @@ npm i ee-table
 
   const checkbox = html`<input type="checkbox" style="height: 16px; width: 16px">`
   table.addHeader(h => h
-    .customHeader(checkbox)
-    .cell(() => checkbox)
+    .customHeader(checkbox) // todo: event handler for @input of checkbox
+    .cell(() => checkbox) // todo: set checked state based on data
   );
 
   table.addHeader(h => h
