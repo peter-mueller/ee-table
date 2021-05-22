@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      background: #e5e5e5;
+      font-family: system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="demo"></div>
+
+  <script type="module">
+    import { html, render } from 'lit-html';
+    import '../dist/mwc-table.js';
+    import { DataTable, Header } from '../dist/index.js';
+
+    class Person {
+        name = "";
+
+        surname = "";
+
+        static of(object) {
+            return Object.assign(new Person(), object);
+        }
+    }
+
+    const dt = new DataTable();
+
+    const checkbox = html`<input type="checkbox" style="height: 16px; width: 16px">`
+    dt.addHeader(new Header(checkbox, () => checkbox));
+    dt.addHeader(new Header("Name", p => html`<a href="./">${p.name}</a>`));
+    dt.addHeader(new Header("Surname", p => p.surname));
+    dt.addHeader(new Header("Voller Name", p => [p.surname, p.name].filter(value => !!value).join(", ")));
+
+    dt.items = [
+        Person.of({name: "Hans", surname: "Test"}),
+        Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
+        Person.of({name: "Anna"}),
+    ]
+
+    render(
+      html`
+        <mwc-table fixed dense .table=${dt}></mwc-table>
+      `,
+      document.querySelector('#demo')
+    );
+  </script>
+</body>
+</html>
