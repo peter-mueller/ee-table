@@ -11,7 +11,7 @@ npm i ee-table
 
 ## Usage
 
-![image](https://user-images.githubusercontent.com/9094815/119236268-bdb02d80-bb36-11eb-815a-c03bafd07eaa.png)
+![image](https://user-images.githubusercontent.com/9094815/119236977-abd08980-bb3a-11eb-96a7-60825918161e.png)
 
 ```html
 <mwc-table fixed dense></mwc-table>
