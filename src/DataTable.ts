@@ -14,29 +14,14 @@ export class Header<RowType> {
   header: string | TemplateResult = '';
 
   /**
-   * Valueer maps the RowType to the value to show in the table cell for
+   * CellMapper maps the RowType to the value to show in the table cell for
    * this row. Can also be a TemplateResult for custom HTML.
    * @returns string to show or custom HTML to show in the cell
    */
-  valueer: (row: RowType) => string | TemplateResult = () => '';
-}
+  cellMapper: (row: RowType) => string | TemplateResult = () => '';
 
-export class HeaderBuilder<RowType> {
-  header: Header<RowType> = new Header();
-
-  name(name: string): HeaderBuilder<RowType> {
-    this.header.header = name;
-    return this;
-  }
-
-  customHeader(customHTML: TemplateResult): HeaderBuilder<RowType> {
-    this.header.header = customHTML;
-    return this;
-  }
-
-  cell(valueer: (row: RowType) => string | TemplateResult): Header<RowType> {
-    this.header.valueer = valueer;
-    return this.header;
+  static of<T>(partial: Partial<Header<T>>): Header<T> {
+    return Object.assign(new Header(), partial);
   }
 }
 
@@ -58,8 +43,8 @@ export class DataTable<RowType> {
   items: RowType[] = [];
 
   /** todo: find better builder api the direct push of header feels weird */
-  addHeader(builder: (b: HeaderBuilder<RowType>) => Header<RowType>) {
-    this.headers.push(builder(new HeaderBuilder<RowType>()));
+  addHeader(header: Partial<Header<RowType>>) {
+    this.headers.push(Header.of(header));
   }
 
   /**
@@ -74,7 +59,7 @@ export class DataTable<RowType> {
     // eslint-disable-next-line no-console
     console.log(this.headers.map(() => '-'.repeat(3)).join(' | '));
     this.items.forEach(item => {
-      const row = this.headers.map(h => h.valueer(item)).join(' | ');
+      const row = this.headers.map(h => h.cellMapper(item)).join(' | ');
       // eslint-disable-next-line no-console
       console.log(row);
     });

@@ -55,7 +55,7 @@ export class EeTable extends LitElement {
   _row(item: unknown) {
     return html`
       <tr>
-        ${this.table.headers.map(h => html`<td>${h.valueer(item)}</td>`)}
+        ${this.table.headers.map(h => html`<td>${h.cellMapper(item)}</td>`)}
       </tr>
     `;
   }

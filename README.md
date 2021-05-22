@@ -34,25 +34,25 @@ npm i ee-table
   const table = new DataTable();
 
   const checkbox = html`<input type="checkbox" style="height: 16px; width: 16px">`
-  table.addHeader(h => h
-    .customHeader(checkbox)
-    .cell(() => checkbox)
-  );
+  table.addHeader({
+    header: checkbox,
+    cellMapper: () => checkbox
+  });
 
-  table.addHeader(h => h
-    .name("Name")
-    .cell(p => html`<a href="./">${p.name}</a>`)
-  );
+  table.addHeader({
+    header: "Name",
+    cellMapper: p => html`<a href="./">${p.name}</a>`,
+  });
 
-  table.addHeader(h => h
-    .name("Surname")
-    .cell(p => p.surname)
-  );
+  table.addHeader({
+    header: "Surname",
+    cellMapper: p => p.surname,
+  });
 
-  table.addHeader(h => h
-    .name("Full Name")
-    .cell(p => [p.surname, p.name].filter(value => !!value).join(", "))
-  );
+  table.addHeader({
+    header: "Full Name",
+    cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+  });
 
   table.items = [
       Person.of({name: "Hans", surname: "Test"}),
