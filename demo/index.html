@@ -4,8 +4,15 @@
   <meta charset="utf-8">
   <style>
     body {
-      background: #e5e5e5;
+
+
+      background: var(--mdc-theme-background, #e5e5e5);
       font-family: system-ui, sans-serif;
+    }
+
+
+    mwc-table {
+      height: 50vh;
     }
   </style>
 </head>
@@ -50,15 +57,54 @@
       cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
     });
 
+    table.addHeader({
+      header: "Full Name",
+      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    });
+
+    table.addHeader({
+      header: "Full Name",
+      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    });
+
+    table.addHeader({
+      header: "Full Name",
+      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    });
+
+    table.addHeader({
+      header: "Full Name",
+      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    });
+
+    table.addHeader({
+      header: "Full Name",
+      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    });
+
     table.items = [
         Person.of({name: "Hans", surname: "Test"}),
         Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
         Person.of({name: "Anna"}),
+        Person.of({name: "Hans", surname: "Test"}),
+        Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
+        Person.of({name: "Anna"}),
+        Person.of({name: "Hans", surname: "Test"}),
+        Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
+        Person.of({name: "Anna"}),
+        Person.of({name: "Hans", surname: "Test"}),
+        Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
+        Person.of({name: "Anna"}),
+        Person.of({name: "Hans", surname: "Test"}),
+        Person.of({name: "Franzzzzzzzzzzzzzzzzzzzz", surname: "Mülllerrrrrrrrrrrrrrr"}),
+        Person.of({name: "Anna"}),
+
+
     ]
 
     render(
       html`
-        <mwc-table fixed dense .table=${table}></mwc-table>
+        <mwc-table caption="A Caption" fixed .table=${table}></mwc-table>
       `,
       document.querySelector('#demo')
     );

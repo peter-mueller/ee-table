@@ -30,11 +30,16 @@ export class MwcTable extends EeTable {
     ...EeTable.styles,
     css`
       table {
+        display: block;
+
         border-collapse: collapse;
         border-radius: 4px;
         background-color: var(--mdc-theme-surface, white);
         color: var(--mdc-theme-on-surface, black);
-        border: 1px solid var(--mdc-theme-secondary, lightgray);
+        border: 1px solid var(--mdc-theme-divider, lightgray);
+
+        height: 100%;
+        overflow: auto;
       }
 
       thead tr {
@@ -42,12 +47,17 @@ export class MwcTable extends EeTable {
       }
 
       th {
+        background-color: var(--mdc-theme-surface, white);
+
         text-align: left;
+
+        position: sticky;
+        top: 0;
       }
 
       tr,
       th + tr {
-        border-top: 1px solid var(--mdc-theme-secondary, lightgray);
+        border-top: 1px solid var(--mdc-theme-divider, lightgray);
       }
 
       td,
@@ -55,6 +65,11 @@ export class MwcTable extends EeTable {
         padding: 0 16px;
         min-height: 40px;
         min-width: 40px;
+      }
+
+      td:last-child,
+      th:last-child {
+        width: 100%;
       }
 
       tbody tr {
