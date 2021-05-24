@@ -15,7 +15,7 @@ npm i ee-table
 
 ```html
 
-<!-- Element definition, you still need to set items property! -->
+<!-- Element definition, you still need to set table property! -->
 <mwc-table id="demo" fixed dense></mwc-table>
 
 <script type="module">
@@ -35,32 +35,32 @@ npm i ee-table
 
   const table = new DataTable();
 
-    const checkbox = html`<input @input=${() => alert("checked changed")} type="checkbox" style="height: 16px; width: 16px;">`
-    table.addHeader(LitHeader.of({
-      header: checkbox,
-      cellRenderer: () => checkbox,
-      columnStyles: () => ({
-        borderLeft: "2px solid white",
-      }),
-      cellStyles: p => (p.name === "Hans" ? {
-        borderLeft:  "2px solid red"
-      } : {})
-    }));
+  const checkbox = html`<input @input=${() => alert("checked changed")} type="checkbox" style="height: 16px; width: 16px;">`
+  table.addHeader(LitHeader.of({
+    header: checkbox,
+    cellRenderer: () => checkbox,
+    columnStyles: () => ({
+      borderLeft: "2px solid white",
+    }),
+    cellStyles: p => (p.name === "Hans" ? {
+      borderLeft:  "2px solid red"
+    } : {})
+  }));
 
-    table.addHeader(LitHeader.of({
-      header: "Name",
-      cellRenderer: p => html`<a href="./">${p.name}</a>`,
-    }));
+  table.addHeader(LitHeader.of({
+    header: "Name",
+    cellRenderer: p => html`<a href="./">${p.name}</a>`,
+  }));
 
-    table.addHeader(StringHeader.of({
-      header: "Surname",
-      cellRenderer: p => p.surname,
-    }));
+  table.addHeader(StringHeader.of({
+    header: "Surname",
+    cellRenderer: p => p.surname,
+  }));
 
-    table.addHeader(StringHeader.of({
-      header: "Full Name",
-      cellRenderer: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    }));
+  table.addHeader(StringHeader.of({
+    header: "Full Name",
+    cellRenderer: p => [p.surname, p.name].filter(value => !!value).join(", "),
+  }));
 
   table.items = [
       Person.of({name: "Hans", surname: "Test"}),
