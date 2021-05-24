@@ -1,4 +1,5 @@
-import { css, property, CSSResult } from 'lit-element';
+import { css, CSSResultArray } from 'lit';
+import { property } from 'lit/decorators.js';
 
 import { EeTable } from './ee-table.js';
 
@@ -26,7 +27,7 @@ export class MwcTable extends EeTable {
    * --mdc-theme-on-secondary	Text color on top of a secondary background
    * --mdc-theme-on-surface Text color on top of a surface background
    */
-  static styles: CSSResult[] = [
+  static styles: CSSResultArray = [
     ...EeTable.styles,
     css`
       table {
@@ -52,7 +53,7 @@ export class MwcTable extends EeTable {
         text-align: left;
 
         position: sticky;
-        top: 0;
+        top: -1px;
       }
 
       tr,
@@ -63,8 +64,6 @@ export class MwcTable extends EeTable {
       td,
       th {
         padding: 0 16px;
-        min-height: 40px;
-        min-width: 40px;
       }
 
       td:last-child,

@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { TemplateResult } from 'lit-html';
+import { StyleInfo } from 'lit/directives/style-map';
 
 /**
  * Header gives away metadata for a header and its column.
@@ -7,22 +7,23 @@ import { TemplateResult } from 'lit-html';
  * This is the functional/modern?/alternative way for annotations (Java, Go Tags, ...).
  * As decorators are only a proposal currently.
  */
-export class Header<RowType> {
+export interface Header<RowType> {
   /**
    * Header is the name or a TemplateResult for custom HTML.
    */
-  header: string | TemplateResult = '';
+  header: string | any;
+  headerAlign?: 'start' | 'center' | 'end';
+  headerStyles?: (row: RowType) => StyleInfo;
+
+  columnStyles?: (row: RowType) => StyleInfo;
 
   /**
    * CellMapper maps the RowType to the value to show in the table cell for
    * this row. Can also be a TemplateResult for custom HTML.
    * @returns string to show or custom HTML to show in the cell
    */
-  cellMapper: (row: RowType) => string | TemplateResult = () => '';
-
-  static of<T>(partial: Partial<Header<T>>): Header<T> {
-    return Object.assign(new Header(), partial);
-  }
+  cellRenderer: (row: RowType) => string | any;
+  cellStyles?: (row: RowType) => StyleInfo;
 }
 
 export class DataTable<RowType> {
@@ -43,8 +44,8 @@ export class DataTable<RowType> {
   items: RowType[] = [];
 
   /** todo: find better builder api the direct push of header feels weird */
-  addHeader(header: Partial<Header<RowType>>) {
-    this.headers.push(Header.of(header));
+  addHeader(header: Header<RowType>) {
+    this.headers.push(header);
   }
 
   /**
@@ -59,7 +60,7 @@ export class DataTable<RowType> {
     // eslint-disable-next-line no-console
     console.log(this.headers.map(() => '-'.repeat(3)).join(' | '));
     this.items.forEach(item => {
-      const row = this.headers.map(h => h.cellMapper(item)).join(' | ');
+      const row = this.headers.map(h => h.cellRenderer(item)).join(' | ');
       // eslint-disable-next-line no-console
       console.log(row);
     });

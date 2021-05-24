@@ -1,4 +1,6 @@
-import { html, css, LitElement, property, CSSResult } from 'lit-element';
+import { css, html, LitElement, CSSResultArray } from 'lit';
+import { property } from 'lit/decorators.js';
+import { StyleInfo, styleMap } from 'lit/directives/style-map.js';
 
 import { DataTable } from './DataTable.js';
 
@@ -16,7 +18,7 @@ export class EeTable extends LitElement {
     }
   `;
 
-  static styles: CSSResult[] = [
+  static styles: CSSResultArray = [
     css`
       :host {
         display: block;
@@ -38,7 +40,20 @@ export class EeTable extends LitElement {
     return html`
       <thead>
         <tr>
-          ${this.table.headers.map(h => html`<th>${h.header}</th>`)}
+          ${this.table.headers.map(
+            h => html`
+              <th
+                style=${styleMap(
+                  EeTable._combinedStyles(undefined, [
+                    h.columnStyles,
+                    h.headerStyles,
+                  ])
+                )}
+              >
+                ${h.header}
+              </th>
+            `
+          )}
         </tr>
       </thead>
     `;
@@ -52,11 +67,39 @@ export class EeTable extends LitElement {
     `;
   }
 
+  static _combinedStyles(
+    item: unknown | undefined,
+    s: (((i?: unknown) => StyleInfo) | undefined)[]
+  ) {
+    const st = s.filter(a => a !== undefined).map(b => (b ? b(item) : {}));
+    return Object.assign({}, ...st);
+  }
+
   _row(item: unknown) {
     return html`
       <tr>
-        ${this.table.headers.map(h => html`<td>${h.cellMapper(item)}</td>`)}
+        ${this.table.headers.map(
+          h => html`
+            <td
+              style=${styleMap(
+                EeTable._combinedStyles(item, [h.columnStyles, h.cellStyles])
+              )}
+            >
+              ${h.cellRenderer(item)}
+            </td>
+          `
+        )}
       </tr>
+    `;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  _footer() {
+    return html`
+      <tfoot>
+        <!-- does not work??! -->
+        <slot name="footer"></slot>
+      </tfoot>
     `;
   }
 
@@ -66,8 +109,7 @@ export class EeTable extends LitElement {
         <caption>
           ${this.caption}
         </caption>
-
-        ${this._header()} ${this._body()}
+        ${this._header()} ${this._footer()} ${this._body()}
       </table>
     `;
   }

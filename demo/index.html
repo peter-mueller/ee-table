@@ -20,9 +20,9 @@
   <div id="demo"></div>
 
   <script type="module">
-    import { html, render } from 'lit-html';
+    import { html, render } from 'lit';
     import '../dist/mwc-table.js';
-    import { DataTable } from '../dist/index.js';
+    import { DataTable, StringHeader, LitHeader } from '../dist/index.js';
 
     class Person {
         name = "";
@@ -36,51 +36,33 @@
 
     const table = new DataTable();
 
-    const checkbox = html`<input type="checkbox" style="height: 16px; width: 16px">`
-    table.addHeader({
+    const checkbox = html`<input @input=${() => alert("checked changed")} type="checkbox" style="height: 16px; width: 16px;">`
+    table.addHeader(LitHeader.of({
       header: checkbox,
-      cellMapper: () => checkbox
-    });
+      cellRenderer: () => checkbox,
+      columnStyles: () => ({
+        borderLeft: "2px solid white",
+      }),
+      cellStyles: p => (p.name === "Hans" ? {
+        borderLeft:  "2px solid red"
+      } : {})
+    }));
 
-    table.addHeader({
+    table.addHeader(LitHeader.of({
       header: "Name",
-      cellMapper: p => html`<a href="./">${p.name}</a>`,
-    });
+      cellRenderer: p => html`<a href="./">${p.name}</a>`,
+    }));
 
-    table.addHeader({
+    table.addHeader(StringHeader.of({
       header: "Surname",
-      cellMapper: p => p.surname,
-    });
+      cellRenderer: p => p.surname,
+    }));
 
-    table.addHeader({
+    table.addHeader(StringHeader.of({
       header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
+      cellRenderer: p => [p.surname, p.name].filter(value => !!value).join(", "),
+    }));
 
-    table.addHeader({
-      header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
-
-    table.addHeader({
-      header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
-
-    table.addHeader({
-      header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
-
-    table.addHeader({
-      header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
-
-    table.addHeader({
-      header: "Full Name",
-      cellMapper: p => [p.surname, p.name].filter(value => !!value).join(", "),
-    });
 
     table.items = [
         Person.of({name: "Hans", surname: "Test"}),
@@ -104,7 +86,8 @@
 
     render(
       html`
-        <mwc-table caption="A Caption" fixed .table=${table}></mwc-table>
+        <mwc-table caption="A Caption" fixed .table=${table}>
+        </mwc-table>
       `,
       document.querySelector('#demo')
     );
