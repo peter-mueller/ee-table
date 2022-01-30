@@ -1,6 +1,9 @@
 
 var template = document.createElement('template');
 template.innerHTML = `
+<style>
+
+</style>
 <table id="table">
   <thead id="thead">
     
@@ -13,34 +16,24 @@ template.innerHTML = `
 
 
 
-class refs {
-  table: HTMLTableElement = null;
-  thead: HTMLTableSectionElement = null;
-  tbody: HTMLTableSectionElement = null;
-}
+class Person {
+  name: string = "";
+  age: number = 0;
 
-function parseRefs(refs: object, shadowRoot: ShadowRoot | null) {
-  if (shadowRoot == null) {
-    throw new Error("no shadow rot");
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age;
   }
-  for (let ref in refs) {
-      let el = shadowRoot.getElementById(ref);
-      if (el != null) {
-        customElements.upgrade(el);
-      }
-      refs[ref] = el;
-    }
 }
-
 
 class Header<Type> {
   title: string = ""
   valueFunc: (value: Type) => string = () => "";
-  
+
   constructor(title: string, valueFunc: (value: Type) => string) {
     this.title = title;
     this.valueFunc = valueFunc;
-  } 
+  }
 }
 
 
@@ -49,46 +42,81 @@ class Table<Type> {
   rows: Type[] = [];
 }
 
-class MyNonReactiveTable extends HTMLElement {
-  _refs = new refs();
-  
-  constructor() {
-    super();
-    this.attachShadow({mode: 'open'});
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
-    parseRefs(this._refs, this.shadowRoot);
+function th(header: Header<any>): HTMLTableCellElement {
+  let th = document.createElement('th');
+  th.innerText = header.title;
+  return th;
+}
+
+
+function td<T>(header: Header<T>, row: T): HTMLTableCellElement {
+  let td = document.createElement('td');
+  td.innerText = header.valueFunc(row);
+  return td;
+}
+
+
+function renderHeaders(thead: HTMLTableSectionElement, headers: Header<any>[]) {
+  let tr = document.createElement('tr');
+  for (let h of headers) {
+    tr.appendChild(th(h));
   }
-  
-  set table(t: Table<any>) {
-    this.renderHeaders(t.headers);
-    this.renderRows(t);
+  thead.replaceChildren(tr);
+}
+
+function mustGetById(root: ShadowRoot, id: string): HTMLElement {
+  let el = root.getElementById(id);
+  if (el == null) {
+    throw new Error(`element with id ${id} not found`)
   }
-  
-  renderHeaders(headers: Header<any>[]) {
+  return el;
+}
+
+function renderRows(tbody: HTMLTableSectionElement, headers: Header<any>[], rows: any[]) {
+  tbody.replaceChildren();
+  for (let r of rows) {
     let tr = document.createElement('tr');
     for (let h of headers) {
-      let td = document.createElement('th');
-      td.innerText = h.title;
-      tr.appendChild(td);
+      tr.appendChild(td(h, r));
     }
-    this._refs.thead.replaceChildren(tr);
+    tbody.appendChild(tr);
   }
-  
-  renderRows(t: Table<any>) {
-    let tbody = this._refs.tbody
-    
-    tbody.replaceChildren();
-    for (let r of t.rows) {
-      let tr = document.createElement('tr');
-      for (let h of t.headers) {
-        let td = document.createElement('td');
-        td.innerText = h.valueFunc(r);
-        tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
-    }
-  } 
-  
+}
+
+class MyNonReactiveTable extends HTMLElement {
+  elementTable: HTMLTableElement;
+  elementThead: HTMLTableSectionElement;
+  elementTbody: HTMLTableSectionElement;
+
+  _headers: Header<any>[] = [];
+  _rows: any[] = [];
+
+  constructor() {
+    super();
+    let root = this.attachShadow({ mode: 'open' });
+    root.appendChild(template.content.cloneNode(true));
+
+    this.elementTable = mustGetById(root, 'table') as HTMLTableElement;
+    this.elementThead = mustGetById(root, 'thead') as HTMLTableSectionElement;
+    this.elementTbody = mustGetById(root, 'tbody') as HTMLTableSectionElement;
+  }
+
+  set table(t: Table<any>) {
+    this.headers = t.headers;
+    this.rows = t.rows;
+  }
+
+  set headers(headers: Header<any>[]) {
+    this._headers = headers;
+    renderHeaders(this.elementThead, headers);
+    renderRows(this.elementTbody, headers, this._rows);
+  }
+
+  set rows(rows: any[]) {
+    this._rows = rows;
+    renderRows(this.elementTbody, this._headers, rows);
+  }
+
 }
 customElements.define('my-non-reactive-table', MyNonReactiveTable);
 
@@ -96,44 +124,30 @@ let myapptemplate = document.createElement('template');
 myapptemplate.innerHTML = `
   <my-non-reactive-table id="table"></my-non-reactive-table>
 `;
-
-class myapprefs {
-  table: MyNonReactiveTable = null;
-}
-
-class Person {
-  name: string = "";
-  age: number = 0;
-  
-  constructor(name: string, age: number) {
-    this.name = name;
-    this.age = age;
-  }
-}
-
 class MyApp extends HTMLElement {
-  _refs = new myapprefs()
-  
+  elementTable: MyNonReactiveTable;
+
   constructor() {
     super();
-    this.attachShadow({mode: 'open'});
-    this.shadowRoot.appendChild(myapptemplate.content.cloneNode(true));
+    let root = this.attachShadow({ mode: 'open' });
+    root.appendChild(myapptemplate.content.cloneNode(true));
+    this.elementTable = mustGetById(root, 'table') as MyNonReactiveTable;
   }
-  
+
   connectedCallback() {
-    parseRefs(this._refs, this.shadowRoot);
-    
+
     let table = new Table<Person>();
     table.headers = [
-      new Header<Person>("Name", (p) => p.name ),
-      new Header<Person>("Age", (p) => p.age+""),
+      new Header<Person>("Name", (p) => p.name),
+      new Header<Person>("Age", (p) => p.age + ""),
     ];
     table.rows = [
       new Person("Franz", 21),
       new Person("Anna", 18),
       new Person("Hans", 32)
     ];
-    this._refs.table.table = table;
+    customElements.upgrade(this.elementTable)
+    this.elementTable.table = table;
   }
 }
 
